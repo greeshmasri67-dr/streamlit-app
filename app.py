@@ -1,12 +1,12 @@
 import streamlit as st
-import pandas as pd
 import snowflake.connector
+import pandas as pd
 
-st.set_page_config(page_title="Streamlit + Snowflake", layout="wide")
+st.set_page_config(page_title="Streamlit + Snowflake")
 
 st.title("❄️ Streamlit connected to Snowflake")
 
-# 1️⃣ Connect to Snowflake
+# Connect to Snowflake
 conn = snowflake.connector.connect(
     user=st.secrets["snowflake"]["user"],
     password=st.secrets["snowflake"]["password"],
@@ -17,32 +17,9 @@ conn = snowflake.connector.connect(
     role=st.secrets["snowflake"]["role"]
 )
 
-st.success("✅ Connected successfully")
+# Run query
+query = "SELECT CURRENT_USER(), CURRENT_DATE();"
+df = pd.read_sql(query, conn)
 
-# 2️⃣ Run query using cursor (MOST RELIABLE)
-query = """
-SELECT *
-FROM ENTERPRISE_DB.GOLD.CUSTOMER_DATA
-LIMIT 100
-"""
-
-cur = conn.cursor()
-cur.execute(query)
-
-# Fetch data
-data = cur.fetchall()
-columns = [desc[0] for desc in cur.description]
-
-df = pd.DataFrame(data, columns=columns)
-
-# 3️⃣ Show data
-st.subheader("📄 Data Preview")
+st.success("✅ Connected to Snowflake")
 st.dataframe(df)
-
-# 4️⃣ Simple graph (example)
-if len(df.columns) >= 2:
-    st.subheader("📊 Sample Chart")
-    st.bar_chart(df.iloc[:, 1])
-
-cur.close()
-conn.close()
