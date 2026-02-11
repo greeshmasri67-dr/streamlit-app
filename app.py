@@ -74,11 +74,3 @@ st.line_chart(month_df, x="MONTH", y="TOTAL_REVENUE")
 # -------------------------------------------------
 # Growth
 # -------------------------------------------------
-st.header("📊 Revenue Growth %")
-
-growth_df = load_df("""
-SELECT *
-FROM ENTERPRISE_DB.GOLD.VW_MONTHLY_REVENUE_GROWTH
-""")
-
-st.line_chart(growth_df, x="MONTH", y="GROWTH_PERCENT")
